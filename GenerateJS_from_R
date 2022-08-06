@@ -1,0 +1,61 @@
+########################################################################################## 
+# Generate dynamic presentation of stimuli (Display, then Hide) on a single page
+# from a Loop & Merge in a Qualtrics experiment 
+#
+# Assumes you have data in a wide format in a Loop & Merge; (e.g., ${lm://Field/1}, ${lm://Field/2}
+# You can adjust the offset time (if you want it to begin a couple seconds later)
+# As well as the presentation / time for hiding. 
+#
+# After you generate this code, you will need to copy it into the 'Add on Load' portion of th e
+# Javascript for the Qualtrics Question. 
+# 
+# You will also need to add a bit of HTML into the Qualtrics question (so it knows what text to update): 
+#     
+#        <p id="EXP_TEXT"></p>
+#
+#
+# Michelle Cohn 8/5/2022
+########################################################################################## 
+
+
+total_number_fields = 18
+
+present_text_ms_START = 0
+text_shown_ms = 5000
+silence_shown_ms = 1000
+#ISI =present_text_ms_START + text_shown_ms + silence_shown_ms 
+
+text_ID = "var text = document.getElementById(\"EXP_TEXT\");"
+silence_text = ""
+
+
+curr_text = '${lm://Field/1}'
+
+set_timeout_SETUP = "setTimeout(function(){ text.textContent = "
+######################################################################  
+
+
+counter = 1
+
+for(i in 0:total_number_fields-1){
+  curr_text_UPDATED = sub("1", counter, curr_text)
+  
+  start_text_time =present_text_ms_START +  text_shown_ms*i + silence_shown_ms*i
+  start_silence_time =present_text_ms_START +  start_text_time + text_shown_ms
+    
+  text_show_function_JS = sprintf("%s \"%s\" }, %s);",set_timeout_SETUP, curr_text_UPDATED, start_text_time)
+  silence_show_function_JS = sprintf("%s \"%s\" }, %s);",set_timeout_SETUP, silence_text, start_silence_time)
+  
+  if(i == 0){
+    JS_CODE = as.data.frame(text_ID)
+    JS_CODE = rbind.data.frame(JS_CODE, text_show_function_JS, silence_show_function_JS)
+  } else {
+    JS_CODE = rbind.data.frame(JS_CODE, text_show_function_JS, silence_show_function_JS)
+  }#endif
+
+  counter = counter + 1
+}
+
+write.csv(JS_CODE, "/Users/michellecohn/Desktop/RESEARCH_PROJECT_FOLDERS/2022_NSF_NasalCoartic/JS_CODE1.csv")
+
+##### GOAL: .txt output to copy & paste into the 'Addo on ready' portion
