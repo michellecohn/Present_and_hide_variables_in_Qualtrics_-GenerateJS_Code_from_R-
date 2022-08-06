@@ -56,6 +56,6 @@ for(i in 0:total_number_fields-1){
   counter = counter + 1
 }
 
-write.csv(JS_CODE, "/Users/michellecohn/Desktop/RESEARCH_PROJECT_FOLDERS/2022_NSF_NasalCoartic/JS_CODE1.csv")
+write.csv(JS_CODE, "/Users/michellecohn/Desktop/JS_CODE1.csv")
 
 ##### GOAL: .txt output to copy & paste into the 'Addo on ready' portion
